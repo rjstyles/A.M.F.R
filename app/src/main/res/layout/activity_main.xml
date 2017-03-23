@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.amfr.MainActivity"
+    android:background="@drawable/classroom">
+
+
+    <Button
+        android:id="@+id/take_attendance_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:onClick="openCamera"
+        android:padding="5sp"
+        android:text="Take Attendance"
+        android:textColor="#900"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="273dp"
+        android:alpha="0.5"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="132dp"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="83dp"
+        android:padding="10sp"
+        android:fontFamily="sans-serif"
+        android:background="#fff"
+        android:text="A.M.F.R"
+        android:textColor="#333"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:alpha="0.4"/>
+
+    <Button
+        android:id="@+id/show_attendance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="#fff"
+        android:text="Show Attendance"
+        android:textColor="#900"
+        android:textStyle="bold"
+        android:padding="5sp"
+        android:alpha="0.5"/>
+</RelativeLayout>
