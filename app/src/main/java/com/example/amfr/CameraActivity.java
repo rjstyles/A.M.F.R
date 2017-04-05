@@ -77,7 +77,7 @@ public class CameraActivity extends AppCompatActivity implements CameraBridgeVie
                     while ((bytesRead = is.read(buffer)) != -1) {
                         os.write(buffer, 0, bytesRead);
                     }
-                    is.close();
+
                     os.close();
 
                     cascadeClassifier = new CascadeClassifier(mCascadeFile.getAbsolutePath());
@@ -193,23 +193,6 @@ public class CameraActivity extends AppCompatActivity implements CameraBridgeVie
             for (Rect r : facesArray) {
                 // drawing rectangle
                 Imgproc.rectangle(inputFrame, r.tl(), r.br(), new Scalar(0, 255, 50, 0), 2);
-
-                /*
-                //database
-                try {
-                    String filename = c + ".jpg";
-                    File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/FaceDatabase/");
-                    dir.mkdir();
-                    File image_file = new File(dir, filename);
-                    Mat tmp = new Mat(grayScaleImage, r);
-                    Imgcodecs.imwrite(image_file.getAbsolutePath(), tmp);
-                    c++;
-                }
-                catch (Exception e) {
-                    Log.e("Exception: ", e.toString());
-                }
-
-                */
             }
         }
         catch (Exception e) {

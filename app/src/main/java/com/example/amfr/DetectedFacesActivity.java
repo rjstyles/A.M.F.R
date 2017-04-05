@@ -3,11 +3,15 @@ package com.example.amfr;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.GridView;
+import android.widget.CheckBox;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import org.opencv.android.Utils;
@@ -16,17 +20,17 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
-import java.util.Vector;
 
 public class DetectedFacesActivity extends AppCompatActivity {
 
     int no_of_faces = 0;
     String photoPath = "";
     Bitmap[] faces;
+    Mat[] normalizedFaces;
     String names[];
-    GridView photoGrid;
-    CustomGridAdapter adapter;
-    Vector<Integer> faceVectors;
+    boolean isPresent[];
+    ListView listView;
+    CustomListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,18 +45,30 @@ public class DetectedFacesActivity extends AppCompatActivity {
         photoPath = Environment.getExternalStorageDirectory()+"/DetectedFaces/";
         faces = new Bitmap[no_of_faces];
         names = new String[no_of_faces];
+        isPresent = new boolean[no_of_faces];
+
+        normalizedFaces = new Mat[no_of_faces];
 
         loadFaces();
         loadNames();
 
-        photoGrid = (GridView) findViewById(R.id.detected_faces_grid);
-        adapter = new CustomGridAdapter(this, names, faces);
-        photoGrid.setAdapter(adapter);
+        listView = (ListView) findViewById(R.id.detected_faces_list);
+        adapter = new CustomListAdapter(this, names, faces, isPresent);
+        listView.setAdapter(adapter);
 
-        photoGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), "Name", Toast.LENGTH_SHORT).show();
+                CheckBox checkBox = (CheckBox) view.findViewById(R.id.present_check_box);
+                if(checkBox.isChecked()) {
+                    isPresent[position] = false;
+                    checkBox.setChecked(false);
+                }
+                else {
+                    isPresent[position] = true;
+                    checkBox.setChecked(true);
+                }
+                Toast.makeText(getApplicationContext(), names[position], Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -61,7 +77,8 @@ public class DetectedFacesActivity extends AppCompatActivity {
 
     private void loadNames() {
         for(int i=0; i<no_of_faces; i++) {
-            names[i] = "Face "+(i+1);
+            names[i] = "recognizing... ";
+            isPresent[i] = true;
         }
     }
 
@@ -74,17 +91,41 @@ public class DetectedFacesActivity extends AppCompatActivity {
     // it recognizes faces... hah ha , its that simple ...lol
 
     public void recognizeFaces() {
+        //normalization
         for(int i=0; i<no_of_faces; i++) {
-            Mat img = new Mat(faces[i].getHeight(), faces[i].getWidth(), CvType.CV_8UC1);
-            Utils.bitmapToMat(faces[i], img);
-            Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2GRAY);
-            Imgproc.equalizeHist(img, img);
-            Utils.matToBitmap(img, faces[i]);
+            normalizedFaces[i] = new Mat(faces[i].getHeight(), faces[i].getWidth(), CvType.CV_8UC1);
+            Utils.bitmapToMat(faces[i], normalizedFaces[i]);
+            Imgproc.cvtColor(normalizedFaces[i], normalizedFaces[i], Imgproc.COLOR_BGR2GRAY);
+            Imgproc.equalizeHist(normalizedFaces[i], normalizedFaces[i]);
         }
-        adapter.notifyDataSetChanged();
-        //Toast.makeText(this, "Histogram Equalized !!", Toast.LENGTH_LONG).show();
+
+        // recognition thread
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FaceRecognitionClient frClient = new FaceRecognitionClient("192.168.43.15", 9000);
+                frClient.connectToServer();
+                if(frClient.connected) {
+                    for (int i = 0; i < no_of_faces; i++) {
+                        names[i] = frClient.recognize(normalizedFaces[i]);
+                    }
+                    handler.sendEmptyMessage(0);
+                }
+                else {
+                    Log.e("Exception", "Not Connected!!");
+                }
+            }
+        });
+        thread.start();
     }
 
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            adapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     protected void onDestroy() {

@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,5 +27,9 @@ public class MainActivity extends AppCompatActivity {
     public void openCamera(View view) {
         Intent intent = new Intent(this, CameraActivity.class);
         startActivity(intent);
+    }
+
+    public void showAttendance(View view) {
+        Toast.makeText(this, "Comming Soon !!", Toast.LENGTH_SHORT).show();
     }
 }

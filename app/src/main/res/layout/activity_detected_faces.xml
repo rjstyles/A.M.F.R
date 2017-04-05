@@ -8,14 +8,6 @@
     tools:context="com.example.amfr.DetectedFacesActivity"
     android:background="#000">
 
-    <GridView
-        android:id="@+id/detected_faces_grid"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="3"
-        android:paddingLeft="15sp"
-        android:layout_above="@+id/submit_button"/>
-
     <Button
         android:id="@+id/submit_button"
         android:layout_width="match_parent"
@@ -24,6 +16,14 @@
         android:layout_centerHorizontal="true"
         android:background="@android:color/background_light"
         android:text="Submit"
-        android:layout_marginTop="5sp"
         android:alpha="0.6"/>
+
+    <ListView
+        android:id="@+id/detected_faces_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/submit_button"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:dividerHeight="0sp"/>
 </RelativeLayout>
